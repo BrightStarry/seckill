@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	<!-- 注解驱动 ,默认开启了对xml,json数据的支持-->
+	<mvc:annotation-driven/>
+	
+	<!-- 配置自动扫描的包 -->
+	<context:component-scan base-package="com.zx.controller"/>
+	
+	<!-- 让WEB-INF/resources文件夹可以被访问 -->
+	<mvc:resources location="/WEB-INF/resources/" mapping="/resources/**"></mvc:resources>
+	
+	<!-- servlet-mapping 映射路径："/" -->
+	<!-- 静态资源默认servlet配置
+		1.加入对静态资源的处理：js,gif,png
+		2.允许使用"/"做整体映射
+		PS:(自己加的)
+		如果不做这样的映射，用了"/"，默认来说，所有的请求都会被当作对controller的请求，
+		因此会产生找不到controller的错误。
+		使用这个注解后，一旦spring发现请求是对静态资源的访问，就会把这个请求交给web容器
+		（tomcat）进行处理。
+		
+		而上面的<mvc:resources>这个则是更进一步，直接自己对这些访问静态资源的请求处理。
+		也因此，使用<mvc:resources>可以把静态资源放在WEB-INF目录下访问。
+		还可以把静态资源直接放在classpath目录中，甚至可以用jar的形式放着。
+	 -->
+<!-- 	<mvc:default-servlet-handler/> -->
+	
+	
+	
+	<!-- 视图解析器 -->
+	<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+</beans>

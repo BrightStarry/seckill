@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+
+	<!-- 导入配置文件 -->
+	<context:property-placeholder location="classpath:jdbc.properties"/>
+	
+	
+	<!-- dataSource -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="url" value="${jdbc.url}"/>
+		<property name="driverClassName" value="${jdbc.driver}"/>
+		<property name="username" value="${jdbc.username}"/>
+		<property name="password" value="${jdbc.password}"/>
+		<!-- 连接池 -->
+		<property name="maxActive" value="${jdbc.maxActive}"/>
+		<property name="maxIdle" value="${jdbc.maxIdle}"/>
+		<property name="maxWait" value="${jdbc.maxWait}"/>
+		<property name="initialSize" value="${jdbc.initialSize}"/>
+		<property name="minIdle" value="${jdbc.minIdle}"/>
+<!-- 		<property name="removeAbandoned" value="${jdbc.removeAbandoned}"/> -->
+<!-- 		<property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}"/> -->
+<!-- 		<property name="logAbandoned" value="${jdbc.logAbandoned}"/> -->
+	</bean>
+	
+	
+	<!-- sqlSessionFactory -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- dataSource -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- mapper文件 -->
+		<property name="mapperLocations" value="classpath:com/zx/mapper/*.xml"></property>
+		<!-- 实体类包名 多个包可以用;号分开-->
+		<property name="typeAliasesPackage" value="com.zx.domain"></property>
+		<!-- MyBatis自身配置文件 -->
+		<property name="configLocation" value="classpath:MyBatis.xml"></property>
+	</bean>
+	
+	
+	<!-- Mybatis dao层代理类 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- dao包 -->
+		<property name="basePackage" value="com.zx.dao"></property>
+		<!-- sqlSessionFactory -->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- redisDao -->
+	<bean id="redisDao" class="com.zx.dao.cache.RedisDao">
+		<constructor-arg index="0" value="${redis.ip}"></constructor-arg>
+		<constructor-arg index="1" value="${redis.port}"></constructor-arg>
+	</bean>
+</beans>

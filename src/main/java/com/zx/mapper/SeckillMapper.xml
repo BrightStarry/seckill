@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zx.dao.SeckillDao">
+	
+<!-- 	<resultMap type="Seckill" id="seckillMap"> -->
+<!-- 		<id property="seckillId" column="seckill_id"/> -->
+<!-- 		<result property="name" column="name"/> -->
+<!-- 		<result property="number" column="number"/> -->
+<!-- 		<result property="startTime" column="start_time"/> -->
+<!-- 		<result property="endTime" column="end_time"/> -->
+<!-- 		<result property="createTime" column="create_time"/> -->
+<!-- 	</resultMap> -->
+	
+	
+	<!-- 减少库存 -->
+  	<update id="reduceNumber">
+  		update 
+  			seckill
+  		set 
+  			number = number -1
+  		where
+  			seckill_id = #{seckillId} 
+  			and #{killTime} <![CDATA[ <= ]]>  end_time
+  			and #{killTime} <![CDATA[ >= ]]>  start_time
+  			and number > 0
+  	</update>
+  
+ 	<!-- 根据id查询秒杀对象 -->
+ 	<select id="queryById" parameterType="long" resultType="seckill">
+ 		select 
+ 			seckill_id,
+			name,
+			number,
+			start_time,
+			end_time,
+			create_time
+		from 
+			seckill
+		where 
+			seckill_id = #{seckillId}						
+ 	</select>
+ 	<!-- 根据偏移量查询秒杀商品列表 -->
+ 	<select id="queryAll" resultType="seckill">
+ 		select 
+ 			seckill_id,
+			name,
+			number,
+			start_time,
+			end_time,
+			create_time
+		from 
+			seckill
+		order by create_time desc
+		limit  #{offet},#{limit}
+ 	</select>
+ 	
+ 	<!-- mysql调用存储过程 -->
+ 	<select id="killByProcedure" statementType="CALLABLE">
+ 		call execute_seckill(
+ 		#{seckillId,jdbcType=BIGINT,mode=IN},
+ 		#{userPhone,jdbcType=BIGINT,mode=IN},
+ 		#{nowTime,jdbcType=TIMESTAMP,mode=IN},
+ 		#{result,jdbcType=INTEGER,mode=OUT}
+ 		)
+ 	</select>
+  
+</mapper>
